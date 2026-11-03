@@ -1,0 +1,10 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import { Battle } from '../src/engine.js';
+import { STAGE } from '../src/config.js';
+const advance=(b,s)=>{for(let i=0;i<s*20;i++)b.update(.05);};
+test('funds, cooldown and income cap',()=>{const b=new Battle();assert.ok(b.spawn('blade'));assert.equal(b.money,115);assert.equal(b.spawn('blade'),false);advance(b,2);assert.ok(b.spawn('blade'));b.money=999;advance(b,1);assert.equal(b.money,999);});
+test('undefended castle loses and time freezes',()=>{const b=new Battle();advance(b,600);assert.equal(b.result,'defeat');assert.equal(b.castles.ally,0);const t=b.time;advance(b,1);assert.equal(b.time,t);});
+test('mixed deployment can win',()=>{const b=new Battle();for(let i=0;i<12000&&!b.result;i++){for(const type of ['guard','archer','blade'])b.spawn(type);b.update(.05);}assert.equal(b.result,'victory');assert.equal(b.castles.enemy,0);});
+test('ranged damage removes enemy and emits defeat effect',()=>{const b=new Battle({...STAGE,enemyFirstSpawn:999});b.spawn('archer');b.spawn('blade','enemy');b.units[0].x=600;b.units[1].x=750;b.units[1].hp=1;advance(b,.3);assert.equal(b.units.filter(u=>u.side==='enemy').length,0);assert.ok(b.effects.some(e=>e.kind==='death'));});
+test('reset restores stage',()=>{const b=new Battle();b.spawn('blade');advance(b,10);b.reset();assert.equal(b.units.length,0);assert.equal(b.money,180);assert.equal(b.time,0);assert.equal(b.result,null);});

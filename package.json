@@ -1,0 +1,8 @@
+{
+  "name": "emberline-defense",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "engines": { "node": ">=20" },
+  "scripts": { "dev": "node server.js", "start": "node server.js", "test": "node --test" }
+}
