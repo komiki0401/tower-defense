@@ -25,7 +25,10 @@ function poly(p,color){c.fillStyle=color;c.beginPath();p.forEach(([x,y],i)=>i?c.
 function castle(x,y,enemy){c.save();c.translate(x,y);const stone=enemy?'#63525e':'#70877b',light=enemy?'#f29c86':'#f5d28d';rect(-39,-77,78,77,stone);for(const t of [-52,25]){rect(t,-98,27,98,stone);for(let i=0;i<3;i++)rect(t+i*10,-106,7,12,stone);}poly([[-27,-78],[0,-112],[27,-78]],enemy?'#795969':'#45645e');rect(-2,-142,3,31,'#b4b59c');poly([[0,-142],[31,-135],[0,-125]],light);c.fillStyle='#1b3036';c.beginPath();c.roundRect(-13,-39,26,40,[13,13,0,0]);c.fill();rect(-42,-75,7,14,light);rect(35,-75,7,14,light);circle(0,-68,7,light);rect(-57,0,114,8,stone);c.restore();}
 function unit(u,y){
   const dir=u.side==='ally'?1:-1,s=Math.min(1,u.age/.25),step=Math.sin(u.age*10)*1.5;
-  c.save();c.translate(u.x,y);c.scale(s*dir,s);
+  c.save();c.translate(u.x,y);
+  // The battlefield scales world positions horizontally only. Cancel that
+  // scale for the sprite so the original cat artwork keeps its aspect ratio.
+  c.scale(s*dir/scale(),s);
   // Enemy cats face left and carry the warm dusk tint of their castle.
   if(u.side==='enemy')c.filter='sepia(.35) hue-rotate(320deg)';
   if(u.flash)c.globalAlpha=.65;
